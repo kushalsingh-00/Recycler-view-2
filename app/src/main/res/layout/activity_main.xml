@@ -8,32 +8,4 @@
     android:padding="8dp"
     tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/name"
-        android:layout_width="203dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginLeft="8dp"
-        android:text="Tomato" />
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/inc_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:src="@drawable/ic_action_add"/>
-    <TextView
-        android:id="@+id/qyt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_gravity="center_vertical"
-        android:text="10"/>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/dec_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="8dp"
-        android:src="@drawable/ic_action_remove" />
 </LinearLayout>

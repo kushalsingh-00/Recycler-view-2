@@ -1,10 +1,10 @@
 package com.example.recyclerview2;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -39,6 +39,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     }
 
     //binds the data to view
+    @SuppressLint({"DefaultLocale", "SetTextI18n"})
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         //get the data at position
@@ -48,7 +49,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         //Bind the data
         holder.b.name.setText(String.format("%s Rs. %d)",products.name,products.price));
 
-        holder.b.qyt.setText(++products.qyt+"");
+        holder.b.qyt.setText(products.qyt+"");
         holder.b.decBtn.setVisibility(products.qyt>0?View.VISIBLE:View.GONE);
         holder.b.qyt.setVisibility(products.qyt>0?View.VISIBLE:View.GONE);
 
@@ -76,7 +77,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
     //holds the view for each item
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
 
     public ProductItemBinding b;
 

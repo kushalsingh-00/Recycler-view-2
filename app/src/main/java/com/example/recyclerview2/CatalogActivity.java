@@ -1,10 +1,14 @@
 package com.example.recyclerview2;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import com.example.recyclerview2.databinding.ActivityCatlogueBinding;
 import com.example.recyclerview2.model.Products;
@@ -18,6 +22,8 @@ import java.util.Objects;
 public class CatalogActivity extends AppCompatActivity {
 
     private ActivityCatlogueBinding b;
+    private ArrayList<Products> products;
+    private ProductAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,20 +34,51 @@ public class CatalogActivity extends AppCompatActivity {
     }
 
     private void setProductsList() {
-        //create dataset
 
-        List<Products> list=new ArrayList<>(
-                Arrays.asList(
-                        new Products("dcsdc",0,0),new Products("cdcsc",0,0)
-                )
-
-        );
+        //Create dataset
+        products=new ArrayList<>();
 
         //create adapter object
-        ProductAdapter productAdapter=new ProductAdapter(this,list);
+        ProductAdapter productAdapter=new ProductAdapter(this,products);
 
         //set the adapter and layout manager to rv
         b.recyclerView.setAdapter(productAdapter);
         b.recyclerView.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    //Inflate the options menu
+
+    @Override
+    //TODO what is menu in onCreate
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_catalog_options,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(item.getItemId()==R.id.add_item) {
+            showProductEditorDialog();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void showProductEditorDialog() {
+        new ProductEditorDialog().show(this, new Products(), new ProductEditorDialog.OnProductEditedListener() {
+            @Override
+            public void onProductEdited(Products product) {
+
+                products.add(product);
+                adapter.notifyItemInserted(products.size()-1);
+            }
+
+            @Override
+
+            public void onCancelled() {
+                Toast.makeText(CatalogActivity.this,"Cancelled",Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

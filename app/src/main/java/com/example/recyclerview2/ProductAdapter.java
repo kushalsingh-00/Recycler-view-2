@@ -16,8 +16,10 @@ import java.util.List;
 
 //adapter for lists of products
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder> {
-
+    //Need For Inflating Layouts
     private Context context;
+
+    //List Of Data
     private List<Products> productList;
 
     public ProductAdapter(Context context, List<Products> productList)
@@ -49,15 +51,13 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         //Bind the data
         holder.b.name.setText(String.format("%s Rs. %d)",products.name,products.price));
 
-        holder.b.qyt.setText(products.qyt+"");
-        holder.b.decBtn.setVisibility(products.qyt>0?View.VISIBLE:View.GONE);
-        holder.b.qyt.setVisibility(products.qyt>0?View.VISIBLE:View.GONE);
+        updateQuantityViews(holder,products);
 
         holder.b.incBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 products.qyt++;
-                    notifyItemChanged(position);
+                    updateQuantityViews(holder,products);
             }
         });
 
@@ -65,9 +65,17 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
             @Override
             public void onClick(View v) {
                 products.qyt--;
-                notifyItemChanged(position);
+                updateQuantityViews(holder,products);
             }
         });
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void updateQuantityViews(ViewHolder holder, Products products)
+    {
+        holder.b.qyt.setText(products.qyt+"");
+        holder.b.decBtn.setVisibility(products.qyt>0?View.VISIBLE:View.GONE);
+        holder.b.qyt.setVisibility(products.qyt>0?View.VISIBLE:View.GONE);
     }
 
     @Override

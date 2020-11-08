@@ -12,16 +12,31 @@ public class Products implements Serializable {
     public float qyt;
     public int price;
     public int type;
-    public List<Variant> variants;
+    public List<Varient> varients;
 
     public Products() {}
 
+    //Weight based
+    public Products(String name, int pricePerKg, float minQty)
+    {
+        type = WEIGHT_BASED;
+        this.name = name;
+        this.price = pricePerKg;
+        this.qyt = minQty;
+    }
+
+    //Varient based
+    public Products(String name) {
+        type = VARIANTS_BASED;
+        this.name = name;
+    }
+
     public void fromVarientString(String[] varientsplit) {
-        variants=new ArrayList<>();
+        varients =new ArrayList<>();
         for (String s :
                 varientsplit) {
             String[] v = s.split(",");
-            variants.add(new Variant(v[0],Integer.parseInt(v[1])));
+            varients.add(new Varient(v[0],Integer.parseInt(v[1])));
         }
     }
 
@@ -32,7 +47,15 @@ public class Products implements Serializable {
                 ", qyt=" + qyt +
                 ", price=" + price +
                 ", type=" + type +
-                ", variants=" + variants +
+                ", variants=" + varients +
                 '}';
+    }
+
+    public String variantsString(){
+        String variantsString = varients.toString();
+        return variantsString
+                .replaceFirst("\\[", "")
+                .replaceFirst("]", "")
+                .replaceAll(",", "\n");
     }
 }

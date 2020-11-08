@@ -7,17 +7,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import com.example.recyclerview2.databinding.ActivityCatlogueBinding;
 import com.example.recyclerview2.model.Products;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+
 
 public class CatalogActivity extends AppCompatActivity {
 
@@ -39,10 +35,10 @@ public class CatalogActivity extends AppCompatActivity {
         products=new ArrayList<>();
 
         //create adapter object
-        ProductAdapter productAdapter=new ProductAdapter(this,products);
+        adapter=new ProductAdapter(this,products);
 
         //set the adapter and layout manager to rv
-        b.recyclerView.setAdapter(productAdapter);
+        b.recyclerView.setAdapter(adapter);
         b.recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
@@ -75,7 +71,6 @@ public class CatalogActivity extends AppCompatActivity {
             }
 
             @Override
-
             public void onCancelled() {
                 Toast.makeText(CatalogActivity.this,"Cancelled",Toast.LENGTH_SHORT).show();
             }

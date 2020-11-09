@@ -40,6 +40,18 @@ public class Products implements Serializable {
         }
     }
 
+    public String qtyToString()
+    {
+        if(qyt<1)
+        {
+            int converted=(int) qyt*1000;
+            return converted+"g";
+        }
+
+        return ((int) qyt)+"kg";
+    }
+
+
     @Override
     public String toString() {
         return "Products{" +

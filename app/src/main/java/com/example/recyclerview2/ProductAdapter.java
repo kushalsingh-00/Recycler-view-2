@@ -2,10 +2,14 @@ package com.example.recyclerview2;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.recyclerview2.databinding.VarientBasedProductBinding;
@@ -21,6 +25,9 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     //List Of Data
     private List<Products> productList;
+
+    //for getting item postion to perform edit and remove function
+    int lastListItemSelected;
 
     public ProductAdapter(Context context, List<Products> productList)
     {
@@ -79,6 +86,8 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
            b.name.setText(products.name);
            b.pricePerKg.setText("Rs. " + products.price);
            b.minQty.setText("MinQty - " + products.qyt + "kg");
+
+           setupContextualMenu(b.getRoot());
        }
        else
        {
@@ -86,7 +95,30 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
            b.name.setText(products.name);
            b.varients.setText(products.variantsString());
+
+           setupContextualMenu(b.getRoot());
        }
+
+       holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+           @Override
+           public boolean onLongClick(View v) {
+               lastListItemSelected=holder.getAdapterPosition();
+               return false;
+           }
+       });
+    }
+
+    private void setupContextualMenu(ConstraintLayout root) {
+        root.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
+            @Override
+            public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+                if(!(context instanceof CatalogActivity))
+                    return;
+
+                //casting the context to catalog type
+                ((CatalogActivity) context).getMenuInflater().inflate(R.menu.product_contextual_menu,menu);
+            }
+        });
     }
 
     @Override
@@ -103,6 +135,8 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             this.b = b;
         }
     }
+
+
 
 
     //View Holder for varient based items

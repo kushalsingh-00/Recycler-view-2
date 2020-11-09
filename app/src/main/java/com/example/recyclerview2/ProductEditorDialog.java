@@ -44,6 +44,21 @@ public class ProductEditorDialog {
                 })
                 .show();
         setupRadioGroup();
+        filldetails();
+    }
+
+    private void filldetails() {
+        b.name.setText(products.name);
+
+        b.productType.check(products.type==Products.WEIGHT_BASED ? R.id.weight_based_rbtn:R.id.variants_based_rbtn);
+
+        if(products.type==Products.WEIGHT_BASED)
+        {
+            b.price.setText(products.price+"");
+            b.minQty.setText(products.qtyToString());
+        }
+        else
+            b.varients.setText(products.variantsString());
     }
 
     private void setupRadioGroup() {

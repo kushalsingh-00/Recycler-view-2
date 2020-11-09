@@ -3,8 +3,11 @@ package com.example.recyclerview2;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.Menu;
@@ -15,6 +18,7 @@ import com.example.recyclerview2.databinding.ActivityCatlogueBinding;
 import com.example.recyclerview2.model.Products;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 
 public class CatalogActivity extends AppCompatActivity {
@@ -22,6 +26,7 @@ public class CatalogActivity extends AppCompatActivity {
     private ActivityCatlogueBinding b;
     private ArrayList<Products> products;
     private ProductAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +43,13 @@ public class CatalogActivity extends AppCompatActivity {
         //Create dataset
         products=new ArrayList<>();
 
+        products = new ArrayList<>(Arrays.asList(
+                new Products("Apple", 100, 1)
+                , new Products("Orange", 100, 1)
+                , new Products("Grapes", 100, 1)
+                , new Products("Kiwi", 100, 1)
+        ));
+
         //create adapter object
         adapter=new ProductAdapter(this,products);
 
@@ -52,6 +64,26 @@ public class CatalogActivity extends AppCompatActivity {
     //TODO what is menu in onCreate
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_catalog_options,menu);
+
+        SearchManager manager= (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        MenuItem menuItem = menu.findItem(R.id.search);
+        SearchView searchView = (SearchView) menuItem.getActionView();
+
+        assert manager != null;
+        searchView.setSearchableInfo(manager.getSearchableInfo(getComponentName()));
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                adapter.filter(newText);
+                return false;
+            }
+        });
         return super.onCreateOptionsMenu(menu);
     }
 

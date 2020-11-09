@@ -16,6 +16,7 @@ import com.example.recyclerview2.databinding.VarientBasedProductBinding;
 import com.example.recyclerview2.databinding.WeightBasedProductBinding;
 import com.example.recyclerview2.model.Products;
 
+import java.util.ArrayList;
 import java.util.List;
 
 //adapter for lists of products
@@ -24,7 +25,7 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private Context context;
 
     //List Of Data
-    private List<Products> productList;
+    private List<Products> visible,allProducts;
 
     //for getting item postion to perform edit and remove function
     int lastListItemSelected;
@@ -32,7 +33,8 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public ProductAdapter(Context context, List<Products> productList)
     {
         this.context=context;
-        this.productList = productList;
+        this.visible=new ArrayList<>(productList);
+        this.allProducts = productList;
     }
 
     //inflate the view for item and create a viewholder object
@@ -65,7 +67,7 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     //returns view type
     @Override
     public int getItemViewType(int position) {
-        return productList.get(position).type;
+        return visible.get(position).type;
     }
 
     //binds the data to view
@@ -74,7 +76,7 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
         //get the data at position
 
-        final Products products=productList.get(position);
+        final Products products=visible.get(position);
 
         //Bind the data
        if(products.type==Products.WEIGHT_BASED)
@@ -123,7 +125,19 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public int getItemCount() {
-        return productList.size();
+        return visible.size();
+    }
+
+    public void filter(String newText) {
+        String query=newText.toLowerCase();
+        visible=new ArrayList<>();
+        for (Products p:
+             allProducts) {
+            if(p.name.toLowerCase().contains(query))
+                visible.add(p);
+
+            notifyDataSetChanged();
+        }
     }
 
     //View holder for weight based items

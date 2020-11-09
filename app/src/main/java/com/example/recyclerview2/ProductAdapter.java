@@ -3,13 +3,11 @@ package com.example.recyclerview2;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.recyclerview2.databinding.ProductItemBinding;
 import com.example.recyclerview2.databinding.VarientBasedProductBinding;
 import com.example.recyclerview2.databinding.WeightBasedProductBinding;
 import com.example.recyclerview2.model.Products;

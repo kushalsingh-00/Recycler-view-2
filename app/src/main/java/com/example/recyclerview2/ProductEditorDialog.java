@@ -22,7 +22,7 @@ public class ProductEditorDialog {
     {
         b=DialogProductEditBinding.inflate(LayoutInflater.from(context));
         this.products=products;
-        
+        //
         //Create Dialog
         new AlertDialog.Builder(context)
                 .setTitle("Edit Product")
@@ -31,7 +31,7 @@ public class ProductEditorDialog {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if(areProductDetailsValid())
-                            listener.onProductEdited(products);
+                            listener.onProductEdited(ProductEditorDialog.this.products); //TODO
                         else
                             Toast.makeText(context, "Invalid Details!", Toast.LENGTH_SHORT).show();
                     }

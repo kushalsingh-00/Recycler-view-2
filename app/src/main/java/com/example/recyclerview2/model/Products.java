@@ -31,6 +31,20 @@ public class Products implements Serializable {
         this.name = name;
     }
 
+    public void initWeightProducts(String name, int pricePerKg, float minQty)
+    {
+        type = WEIGHT_BASED;
+        this.name = name;
+        this.price = pricePerKg;
+        this.qyt = minQty;
+    }
+
+    //Varient based
+    public void initVarientProducts(String name) {
+        type = VARIANTS_BASED;
+        this.name = name;
+    }
+
     public void fromVarientString(String[] varientsplit) {
         varients =new ArrayList<>();
         for (String s :

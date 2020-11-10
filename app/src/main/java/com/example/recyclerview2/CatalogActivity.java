@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.app.SearchManager;
@@ -19,6 +20,8 @@ import com.example.recyclerview2.model.Products;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 
 
 public class CatalogActivity extends AppCompatActivity {
@@ -26,6 +29,7 @@ public class CatalogActivity extends AppCompatActivity {
     private ActivityCatlogueBinding b;
     private ArrayList<Products> products;
     private ProductAdapter adapter;
+    private SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +60,9 @@ public class CatalogActivity extends AppCompatActivity {
         //set the adapter and layout manager to rv
         b.recyclerView.setAdapter(adapter);
         b.recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        b.recyclerView.addItemDecoration(
+                new DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
+        );
     }
 
     //Inflate the options menu
@@ -65,12 +72,11 @@ public class CatalogActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_catalog_options,menu);
 
-        SearchManager manager= (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        MenuItem menuItem = menu.findItem(R.id.search);
-        SearchView searchView = (SearchView) menuItem.getActionView();
+        searchView=(SearchView) menu.findItem(R.id.search).getActionView();
 
-        assert manager != null;
+        SearchManager manager= (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         searchView.setSearchableInfo(manager.getSearchableInfo(getComponentName()));
+
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -89,21 +95,38 @@ public class CatalogActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if(item.getItemId()==R.id.add_item) {
+        switch (item.getItemId()) {
+            case R.id.add_item :
             showProductEditorDialog();
             return true;
-        }
 
+            case R.id.sort :
+                sort();
+                return true;
+        }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void sort() {
+        Collections.sort(adapter.visible, new Comparator<Products>(){
+            @Override
+            public int compare(Products a, Products b) {
+                return a.name.compareTo(b.name);
+            }
+        });
+        adapter.notifyDataSetChanged();
     }
 
     private void showProductEditorDialog() {
         new ProductEditorDialog().show(this, new Products(), new ProductEditorDialog.OnProductEditedListener() {
             @Override
             public void onProductEdited(Products product) {
+                adapter.allProducts.add(product);
 
-                products.add(product);
-                adapter.notifyItemInserted(products.size()-1);
+                if(isNameInQuery(product.name)) {
+                    adapter.visible.add(product);
+                    adapter.notifyItemInserted(adapter.visible.size()-1);
+                }
             }
 
             @Override
@@ -113,7 +136,12 @@ public class CatalogActivity extends AppCompatActivity {
         });
     }
 
-    //menthod to handle clicks in contextual menu
+    private boolean isNameInQuery(String name) {
+        String query = searchView.getQuery().toString().toLowerCase();
+        return name.toLowerCase().contains(query);
+    }
+
+    //method to handle clicks in contextual menu
 
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
@@ -131,12 +159,14 @@ public class CatalogActivity extends AppCompatActivity {
     }
 
     private void edit() {
-        Products selected=products.get(adapter.lastListItemSelected);
+        Products selected=adapter.visible.get(adapter.lastListItemSelected);
 
         new ProductEditorDialog().show(this, selected, new ProductEditorDialog.OnProductEditedListener() {
             @Override
             public void onProductEdited(Products product) {
-                products.set(adapter.lastListItemSelected,product);
+//                if(!product.name.toLowerCase().contains(getSearchQuery()))
+//                adapter.visible.remove(adapter.lastListItemSelected);
+
                 adapter.notifyItemChanged(adapter.lastListItemSelected);
             }
 
@@ -154,7 +184,11 @@ public class CatalogActivity extends AppCompatActivity {
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        products.remove(adapter.lastListItemSelected);
+
+                        Products removed=adapter.visible.get(adapter.lastListItemSelected);
+
+                        products.remove(removed);
+                        adapter.visible.remove(removed);
                         adapter.notifyItemRemoved(adapter.lastListItemSelected);
                     }
                 })

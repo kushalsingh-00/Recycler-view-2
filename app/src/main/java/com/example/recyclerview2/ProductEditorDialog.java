@@ -20,9 +20,9 @@ public class ProductEditorDialog {
 
     void show(final Context context, final Products products, final OnProductEditedListener listener)
     {
-        b=DialogProductEditBinding.inflate(LayoutInflater.from(context));
         this.products=products;
-        //
+        b=DialogProductEditBinding.inflate(LayoutInflater.from(context));
+
         //Create Dialog
         new AlertDialog.Builder(context)
                 .setTitle("Edit Product")
@@ -50,7 +50,7 @@ public class ProductEditorDialog {
     private void filldetails() {
         b.name.setText(products.name);
 
-        b.productType.check(products.type==Products.WEIGHT_BASED ? R.id.weight_based_rbtn:R.id.variants_based_rbtn);
+        b.productType.check(products.type==Products.WEIGHT_BASED ? R.id.weight_based_rbtn : R.id.variants_based_rbtn);
 
         if(products.type==Products.WEIGHT_BASED)
         {
@@ -90,7 +90,7 @@ public class ProductEditorDialog {
 
         switch (b.productType.getCheckedRadioButtonId()){
             case R.id.weight_based_rbtn :
-                products.type=products.WEIGHT_BASED;
+//                products.type=products.WEIGHT_BASED;
 
                 String pricePerKg=b.price.getText().toString().trim();
                 String minQty=b.minQty.getText().toString().trim();
@@ -99,18 +99,18 @@ public class ProductEditorDialog {
                 if(pricePerKg.isEmpty()||minQty.isEmpty()||!minQty.matches("\\d+(kg|g)"))
                     return false;
 
-                products=new Products(name
+                products.initWeightProducts(name
                         ,Integer.parseInt(pricePerKg)
                         ,extractMinQyt(minQty));
 
                 return true;
 
             case R.id.variants_based_rbtn :
-                products.type=products.VARIANTS_BASED;
+//                products.type=products.VARIANTS_BASED;
 
                 String varients=b.varients.getText().toString().trim();
 
-                products=new Products(name);
+                products.initVarientProducts(name);
 
                 return areVarientsValid(varients);
         }

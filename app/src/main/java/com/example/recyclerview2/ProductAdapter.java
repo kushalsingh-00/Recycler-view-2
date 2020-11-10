@@ -25,7 +25,7 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private Context context;
 
     //List Of Data
-    private List<Products> visible,allProducts;
+    public List<Products> visible,allProducts;
 
     //for getting item postion to perform edit and remove function
     int lastListItemSelected;
@@ -135,9 +135,8 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
              allProducts) {
             if(p.name.toLowerCase().contains(query))
                 visible.add(p);
-
-            notifyDataSetChanged();
-        }
+            }
+        notifyDataSetChanged();
     }
 
     //View holder for weight based items

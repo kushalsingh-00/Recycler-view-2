@@ -3,4 +3,4 @@
 # Admin App
 
 ### Download Apk
-**[Link](https://github.com/kushalsingh-00/Recycler-view-2/blob/master/apk/app-debug.apk)**
+**[Link](https://github.com/kushalsingh-00/Recycler-view-2/raw/master/apk/app-debug.apk)**

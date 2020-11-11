@@ -16,6 +16,12 @@
         android:title="sort"/>
 
     <item
+        android:id="@+id/drag"
+        android:icon="@drawable/ic_action_drag"
+        app:showAsAction="always"
+        android:title="Drag"/>
+
+    <item
         android:id="@+id/add_item"
         android:icon="@drawable/ic_action_add"
         android:title="Add new item"

@@ -5,11 +5,16 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,11 +22,14 @@ import android.widget.Toast;
 
 import com.example.recyclerview2.databinding.ActivityCatlogueBinding;
 import com.example.recyclerview2.model.Products;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 
 public class CatalogActivity extends AppCompatActivity {
@@ -30,6 +38,9 @@ public class CatalogActivity extends AppCompatActivity {
     private ArrayList<Products> products;
     private ProductAdapter adapter;
     private SearchView searchView;
+    private ItemTouchHelper itemTouchHelper;
+    public boolean isDragAndDropOn;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,22 +48,13 @@ public class CatalogActivity extends AppCompatActivity {
         b=ActivityCatlogueBinding.inflate(getLayoutInflater());
         setContentView(b.getRoot());
 
+        load();
         setProductsList();
 
 
     }
 
     private void setProductsList() {
-
-        //Create dataset
-        products=new ArrayList<>();
-
-        products = new ArrayList<>(Arrays.asList(
-                new Products("Apple", 100, 1)
-                , new Products("Orange", 100, 1)
-                , new Products("Grapes", 100, 1)
-                , new Products("Kiwi", 100, 1)
-        ));
 
         //create adapter object
         adapter=new ProductAdapter(this,products);
@@ -63,6 +65,27 @@ public class CatalogActivity extends AppCompatActivity {
         b.recyclerView.addItemDecoration(
                 new DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
         );
+
+        dragAndDrop();
+    }
+
+    private void dragAndDrop() {
+        ItemTouchHelper.SimpleCallback simpleCallback= new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.START | ItemTouchHelper.END, 0) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                int initialPosition=viewHolder.getAdapterPosition();
+                int finalPosition=target.getAdapterPosition();
+                Collections.swap(adapter.visible,initialPosition,finalPosition);
+                b.recyclerView.getAdapter().notifyItemMoved(initialPosition,finalPosition);
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+
+            }
+        };
+        itemTouchHelper=new ItemTouchHelper(simpleCallback);
     }
 
     //Inflate the options menu
@@ -94,6 +117,32 @@ public class CatalogActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        saveData();
+    }
+
+    private void saveData() {
+        SharedPreferences preferences=getSharedPreferences("data",MODE_PRIVATE);
+        preferences.edit()
+                .putString("data",new Gson().toJson(products))
+                .apply();
+    }
+
+    private void load()
+    {
+        SharedPreferences preferences=getSharedPreferences("data",MODE_PRIVATE);
+        String data=preferences.getString("data",null);
+
+        if(data!=null)
+            products = new Gson().fromJson(data, new TypeToken<List<Products>>(){}.getType());
+        else
+            products=new ArrayList<>();
+
+    }
+
+    @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.add_item :
@@ -103,15 +152,39 @@ public class CatalogActivity extends AppCompatActivity {
             case R.id.sort :
                 sort();
                 return true;
+
+            case R.id.drag :
+                toggleDragAndDrop(item);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void toggleDragAndDrop(MenuItem item) {
+        bgColor(item);
+
+        if(isDragAndDropOn)
+            itemTouchHelper.attachToRecyclerView(null);
+        else
+            itemTouchHelper.attachToRecyclerView(b.recyclerView);
+
+        isDragAndDropOn=!isDragAndDropOn;
+    }
+
+    private void bgColor(MenuItem item) {
+        Drawable ic=item.getIcon();
+        if(isDragAndDropOn)
+            ic.setColorFilter(getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
+        else
+            ic.setColorFilter(getResources().getColor(R.color.yellow),PorterDuff.Mode.SRC_ATOP);
+
+        item.setIcon(ic);
     }
 
     private void sort() {
         Collections.sort(adapter.visible, new Comparator<Products>(){
             @Override
             public int compare(Products a, Products b) {
-                return a.name.compareTo(b.name);
+                return a.name.compareToIgnoreCase(b.name);
             }
         });
         adapter.notifyDataSetChanged();

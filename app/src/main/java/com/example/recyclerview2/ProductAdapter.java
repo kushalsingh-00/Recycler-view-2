@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -118,7 +117,9 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     return;
 
                 //casting the context to catalog type
-                ((CatalogActivity) context).getMenuInflater().inflate(R.menu.product_contextual_menu,menu);
+                CatalogActivity catalogActivity=((CatalogActivity) context);
+                if(!catalogActivity.isDragAndDropOn)
+                    catalogActivity.getMenuInflater().inflate(R.menu.product_contextual_menu,menu);
             }
         });
     }

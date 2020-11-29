@@ -21,12 +21,15 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.recyclerview2.databinding.ActivityCatlogueBinding;
+import com.example.recyclerview2.model.Inventory;
 import com.example.recyclerview2.model.Products;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -35,11 +38,16 @@ import java.util.List;
 public class CatalogActivity extends AppCompatActivity {
 
     private ActivityCatlogueBinding b;
-    private ArrayList<Products> products;
+    private List<Products> products;
     private ProductAdapter adapter;
     private SearchView searchView;
     private ItemTouchHelper itemTouchHelper;
     public boolean isDragAndDropOn;
+
+    String sharedPref="com.example.recyclerview2";
+    private Gson gson;
+    private MyApp myApp;
+    private SharedPreferences preferences;
 
 
     @Override
@@ -48,10 +56,12 @@ public class CatalogActivity extends AppCompatActivity {
         b=ActivityCatlogueBinding.inflate(getLayoutInflater());
         setContentView(b.getRoot());
 
-        load();
-        setProductsList();
+        preferences=getSharedPreferences(sharedPref,MODE_PRIVATE);
+        gson=new Gson();
 
+        myApp= (MyApp) getApplicationContext();
 
+        loadPriviousData();
     }
 
     private void setProductsList() {
@@ -116,30 +126,113 @@ public class CatalogActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
 
-        saveData();
-    }
-
-    private void saveData() {
-        SharedPreferences preferences=getSharedPreferences("data",MODE_PRIVATE);
-        preferences.edit()
-                .putString("data",new Gson().toJson(products))
-                .apply();
-    }
-
-    private void load()
+    private void loadPriviousData()
     {
-        SharedPreferences preferences=getSharedPreferences("data",MODE_PRIVATE);
-        String data=preferences.getString("data",null);
+        String data=preferences.getString(sharedPref,null);
 
         if(data!=null)
+        {
             products = new Gson().fromJson(data, new TypeToken<List<Products>>(){}.getType());
+            setProductsList();
+        }
         else
-            products=new ArrayList<>();
+            fetchFromCloud();
 
+    }
+
+    private void fetchFromCloud() {
+        if(myApp.isOffline())
+        {
+            myApp.showToast(this,"It Seems Your Device Is Ofline");
+        }
+
+        myApp.showLoadingDialog(this);
+
+        myApp.ff.collection("Inventory").document("product")
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if(documentSnapshot.exists())
+                        {
+                            Inventory i=documentSnapshot.toObject(Inventory.class);
+                            products= i.products;
+                            saveLocally();
+                        }
+                        else{
+                            products=new ArrayList<>();
+                            setProductsList();
+                            myApp.hideDialog();
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(myApp, "Failed to load", Toast.LENGTH_SHORT).show();
+                        myApp.hideDialog();
+                    }
+                });
+    }
+    // on Back Press save data
+
+    @Override
+    public void onBackPressed() {
+        new AlertDialog.Builder(this)
+                .setTitle("Unsaved Changes")
+                .setMessage("Do you want to save?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        saveDataToDB();
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                })
+                .show();
+    }
+
+    private void saveDataToDB() {
+        if(myApp.isOffline())
+            myApp.showToast(this,"It Seems your device is ofline");
+
+        myApp.showLoadingDialog(this);
+
+        Inventory inventory=new Inventory(products);
+
+        myApp.ff.collection("inventory").document("products")
+                .set(inventory)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(CatalogActivity.this, "Saved", Toast.LENGTH_SHORT).show();
+                        saveLocally();
+                        myApp.hideDialog();
+                        finish();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(CatalogActivity.this, "Failed", Toast.LENGTH_SHORT).show();
+                        myApp.hideDialog();
+                    }
+                });
+
+    }
+
+    // saving data locally
+
+    private void saveLocally()
+    {
+        SharedPreferences.Editor editor=preferences.edit();
+        String s=gson.toJson(products);
+        editor.putString(sharedPref,s).apply();
     }
 
     @Override
@@ -273,4 +366,7 @@ public class CatalogActivity extends AppCompatActivity {
                 })
                 .show();
     }
+
+
+
 }

@@ -1,4 +1,4 @@
-package com.example.recyclerview2;
+package com.example.recyclerview2.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -11,6 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.recyclerview2.CatalogActivity;
+import com.example.recyclerview2.R;
 import com.example.recyclerview2.databinding.VarientBasedProductBinding;
 import com.example.recyclerview2.databinding.WeightBasedProductBinding;
 import com.example.recyclerview2.model.Products;
@@ -27,7 +29,7 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public List<Products> visible,allProducts;
 
     //for getting item postion to perform edit and remove function
-    int lastListItemSelected;
+    public int lastListItemSelected;
 
     public ProductAdapter(Context context, List<Products> productList)
     {

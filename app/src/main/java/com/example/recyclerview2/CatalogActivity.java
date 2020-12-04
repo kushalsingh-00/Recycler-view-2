@@ -12,27 +12,37 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
+import com.example.recyclerview2.adapter.ProductAdapter;
 import com.example.recyclerview2.databinding.ActivityCatlogueBinding;
 import com.example.recyclerview2.model.Inventory;
+import com.example.recyclerview2.model.Order;
 import com.example.recyclerview2.model.Products;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class CatalogActivity extends AppCompatActivity {
@@ -49,6 +59,9 @@ public class CatalogActivity extends AppCompatActivity {
     private MyApp myApp;
     private SharedPreferences preferences;
 
+    private Order order;
+    private Map<String,Order> map=new HashMap<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +75,24 @@ public class CatalogActivity extends AppCompatActivity {
         myApp= (MyApp) getApplicationContext();
 
         loadPriviousData();
+
+        //creating topic for getting order notification
+        FirebaseMessaging.getInstance().subscribeToTopic("admin");
+
+        b.orderDetails.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openOrderActivity();
+            }
+        });
+
+    }
+
+    private void openOrderActivity() {
+
+        Intent i=new Intent(CatalogActivity.this,OrderDetails.class);
+//        i.putExtra("dataOrder", (Serializable) map);
+        startActivity(i);
     }
 
     private void setProductsList() {

@@ -26,11 +26,25 @@ public class Order implements Serializable {
         this.map = map;
         this.subTotal = subTotal;
         this.status = status;
-        this.timeStamp = timeStamp.now();
+        this.timeStamp = Timestamp.now();
     }
 
     public static class OrderStatus {
         public static final int PLACED = 1 // Initially (U)
                 , DELIVERED = 0, DECLINED = -1;     //(A)
+    }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "status=" + status +
+                ", orderId='" + orderId + '\'' +
+                ", timeStamp=" + timeStamp +
+                ", userName='" + userName + '\'' +
+                ", userPhoneNo='" + userPhoneNo + '\'' +
+                ", userAddress='" + userAddress + '\'' +
+                ", map=" + map +
+                ", subTotal=" + subTotal +
+                '}';
     }
 }

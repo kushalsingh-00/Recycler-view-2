@@ -1,4 +1,4 @@
-package com.example.user.fcmsender.legacy;
+package com.example.recyclerview2.fcmsender.legacy;
 
 import java.io.InputStream;
 import java.util.Scanner;

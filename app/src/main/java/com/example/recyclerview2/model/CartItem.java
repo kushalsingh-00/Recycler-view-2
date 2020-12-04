@@ -22,9 +22,9 @@ public class CartItem implements Serializable {
 
     @Override
     public String toString() {
-        return "CartItem{" +
-                "name='" + name + '\'' +
-                ", qty=" + qty +
+        return "CartItem{" +"\n"+
+                "name='" + name + '\'' +"\n"+
+                ", qty=" + qty +"\n"+
                 ", price=" + price +
                 '}';
     }

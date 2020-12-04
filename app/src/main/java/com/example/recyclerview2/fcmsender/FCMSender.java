@@ -1,4 +1,4 @@
-package com.example.user.fcmsender;
+package com.example.recyclerview2.fcmsender;
 
 import okhttp3.Call;
 import okhttp3.Callback;

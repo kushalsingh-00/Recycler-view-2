@@ -1,4 +1,4 @@
-package com.example.user.fcmsender;
+package com.example.recyclerview2.fcmsender;
 
 public class MessageFormatter {
     private static String sampleMsgFormat = "{" +

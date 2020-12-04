@@ -1,4 +1,4 @@
-package com.example.user.fcmsender.legacy;
+package com.example.recyclerview2.fcmsender.legacy;
 
 public class OnMsgSentListner {
     public interface OnMsgSentListener {
